@@ -55,5 +55,6 @@ pnpm format           # prettier
 
 - M1-M2 ✅ jenis-konten 10 soal + verifikasi
 - M3 ✅ fondasi app (scaffold, shadcn, router, repo)
-- M4-M6 belum: sesi interaktif, explain AI, dashboard streak/XP.
+- M4 ✅ sesi interaktif trace (MCQ bertingkat + feedback instan + XP & streak localStorage)
+- M5-M6 belum: explain AI (`api/grade.ts`), dashboard streak/XP penuh.
 Baca `docs/adhd-prd-v1.4.md` buat detail spesifikasi sebelum kerjaan yang melibatkan fitur baru.
