@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Prototype UI — A.D.H.D. (Sesi Latihan)</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  /* Gaya nampilin snippet dengan "highlight" — variasi feedback beda */
+  .code-frame { background:#0b1220; border-radius:12px; overflow:hidden; }
+  .code-frame pre { margin:0; padding:1rem; overflow-x:auto; font-size:0.875rem; line-height:1.6; }
+  .hl { background:rgba(250,204,21,.15); border-radius:4px; padding:0 2px; }
+  .hl-line { background:rgba(59,130,246,.15); display:block; margin:0 -1rem; padding:0 1rem; border-left:3px solid #3b82f6; }
+</style>
+</head>
+<body class="bg-slate-100 text-slate-900 antialiased">
+
+  <!-- ═══════════ HEADER DEMO (bukan bagian desain) ═══════════ -->
+  <div class="max-w-4xl mx-auto px-4 pt-6">
+    <p class="text-xs font-bold uppercase tracking-widest text-slate-400">Prototype UI — throwaway, nggak dipake di produksi</p>
+    <h1 class="text-xl font-bold mt-1">A.D.H.D. — Sesi Latihan</h1>
+  </div>
+
+  <!-- ═══════════ LAYAR A — BEDAH KODE BERTINGKAT ═══════════ -->
+  <!-- Variasi A1 : "Kartu Terpusat" (gaya Duolingo) -->
+  <section id="a1" class="prototype max-w-4xl mx-auto px-4 py-6 hidden">
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+      <!-- status bar -->
+      <div class="flex items-center justify-between text-sm mb-5">
+        <span class="text-slate-500">Soal 1 <span class="text-slate-300">/ 5</span></span>
+        <span class="inline-flex items-center gap-1 font-semibold text-amber-600">🔥 10 XP</span>
+      </div>
+      <!-- progress step -->
+      <div class="flex gap-1.5 mb-5">
+        <div class="flex-1 h-2 rounded-full bg-amber-400"></div>
+        <div class="flex-1 h-2 rounded-full bg-slate-200"></div>
+        <div class="flex-1 h-2 rounded-full bg-slate-200"></div>
+        <div class="flex-1 h-2 rounded-full bg-slate-200"></div>
+      </div>
+
+      <h2 class="text-lg font-bold mb-1">Bedah Modal Pop-up</h2>
+      <p class="text-sm text-slate-500 mb-4">Langkah 1 dari 3 — kita bedah satu-satu.</p>
+
+      <!-- snippet -->
+      <div class="code-frame mono mb-6">
+        <div class="bg-slate-900 rounded-xl overflow-hidden">
+          <div class="flex items-center gap-1.5 px-4 pt-3 pb-2">
+            <span class="w-3 h-3 rounded-full bg-red-400"></span>
+            <span class="w-3 h-3 rounded-full bg-yellow-400"></span>
+            <span class="w-3 h-3 rounded-full bg-green-400"></span>
+            <span class="ml-3 text-xs text-slate-400 font-sans">Modal.tsx</span>
+          </div>
+          <pre class="p-4 text-sm text-slate-100 overflow-x-auto"><code>&lt;div <span class="hl">className={`fixed inset-0 bg-black ${isOpen ? 'block' : 'hidden'}`}</span>&gt;</code></pre>
+        </div>
+      </div>
+
+      <p class="font-medium mb-3">Apa fungsi class <code class="bg-slate-100 px-1.5 py-0.5 rounded text-sm font-semibold">fixed</code> di baris itu?</p>
+
+      <div class="space-y-2.5">
+        <button class="w-full text-left bg-white border-2 border-slate-200 hover:border-blue-400 rounded-xl px-4 py-3 transition">
+          <span class="font-medium">Elemen menempel di posisi layar, nggak ikut scroll</span>
+        </button>
+        <button class="w-full text-left bg-white border-2 border-slate-200 hover:border-blue-400 rounded-xl px-4 py-3 transition">
+          <span class="font-medium">Elemen gabisa diklik sama user</span>
+        </button>
+        <button class="w-full text-left bg-white border-2 border-red-300 rounded-xl px-4 py-3 transition">
+          <span class="font-medium">Elemen selalu paling depan</span>
+          <span class="block text-sm text-red-500 mt-0.5">✗ Jawaban salah</span>
+        </button>
+        <button class="w-full text-left bg-white border-2 border-slate-200 hover:border-blue-400 rounded-xl px-4 py-3 transition">
+          <span class="font-medium">Elemen penuh layar</span>
+        </button>
+      </div>
+
+      <!-- feedback analogi -->
+      <div class="mt-5 bg-red-50 border border-red-200 rounded-xl p-4">
+        <p class="text-sm font-semibold text-red-700 mb-1">Hampir, tapi meleset dikit 🔍</p>
+        <p class="text-sm text-red-800 leading-relaxed">
+          <code class="bg-red-100 px-1 rounded">fixed</code> itu bukan "paling depan" — dia itu <b>nempel pake lem super ke layar</b>.
+          Coba scroll halaman ini; elemen dengan <code class="bg-red-100 px-1 rounded">fixed</code> bakal <b>diam di tempat</b>, nggak ikut jalan.
+          Buat "paling depan" di-front-lé itu job-nya <code class="bg-red-100 px-1 rounded">z-index</code>, beda orang.
+        </p>
+      </div>
+    </div>
+
+    <button class="w-full mt-4 bg-amber-500 hover:bg-amber-400 text-white font-bold rounded-xl py-3.5 transition">Lanjut ke Langkah 2 →</button>
+  </section>
+
+  <!-- Variant A2 : DUA PANEL (IDE style, snippet kiri, soal kanan) -->
+  <section id="a2" class="prototype max-w-6xl mx-auto px-4 py-6 hidden">
+
+    <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+      <div class="md:col-span-3 bg-slate-900 rounded-2xl overflow-hidden h-fit sticky top-4">
+        <div class="flex items-center gap-1.5 px-4 py-2.5 bg-slate-800">
+          <span class="w-3 h-3 rounded-full bg-red-400"></span>
+          <span class="w-3 h-3 rounded-full bg-yellow-400"></span>
+          <span class="w-3 h-3 rounded-full bg-green-400"></span>
+          <span class="ml-2 text-xs text-slate-400 font-mono">modal.tsx</span>
+        </div>
+        <pre class="p-5 text-sm text-slate-100 font-mono leading-relaxed overflow-x-auto"><code><span class="text-slate-500">// garis ini kita bedah</span>
+&lt;div className={</span>`fixed inset-0 bg-black< 
+  <span class="text-slate-400">${isOpen ? <span class="text-yellow-300">'block'</span> : <span class="text-yellow-300">'hidden'</span>}</span>
+}`}&gt;
+  &lt;h1&gt;Modal Pop-up Kebuka !&lt;/h1&gt;
+&lt;/div&gt;</code></pre>
+        <div class="px-5 py-2 text-xs text-slate-500">Menbedah langkah 2 — ternary operator</div>
+      </div>
+
+      <div class="md:col-span-2 bg-white rounded-2xl border border-slate-200 p-5 h-max">
+        <div class="flex items-center justify-between mb-4">
+          <span class="text-xs font-semibold bg-blue-100 text-blue-700 rounded-full px-3 py-1">Bedah · Langkah 2/4</span>
+          <span class="text-xs text-slate-400 font-medium">🔥 10 XP</span>
+        </div>
+        <p class="font-semibold mb-4 text-sm leading-relaxed">
+          Saat <code class="bg-slate-100 px-1.5 py-0.5 rounded font-mono">isOpen</code> bernilai <b>false</b>, class manakah yang kepasang?
+        </p>
+        <div class="space-y-2.5">
+          <button class="w-full text-left border-2 border-slate-200 hover:border-blue-400 rounded-xl px-4 py-3 text-sm transition"><span class="font-semibold">block</span> — modal muncul</button>
+          <button class="w-full text-left border-2 border-green-400 bg-green-50 rounded-xl px-4 py-3 text-sm transition"><span class="font-semibold">hidden</span> — modal ngumpet</button>
+          <button class="w-full text-left border-2 border-slate-200 hover:border-blue-400 rounded-xl px-4 py-3 text-sm transition"><span class="font-semibold">keduanya</span></button>
+          <button class="w-full text-left border-2 border-slate-200 hover:border-blue-400 rounded-xl px-4 py-3 text-sm transition"><span class="font-semibold">error</span> — sintaks patah</button>
+        </div>
+        <div class="mt-4 bg-green-50 border border-green-200 rounded-xl p-3 text-sm">
+          <p class="font-semibold text-green-700">Correct — zoom on 🎯</p>
+          <p class="text-green-800 mt-1"><code class="bg-green-100 px-1 rounded">hidden</code> = <code class="bg-green-100 px-1 rounded">display:none</code> — elemennya <b>benar-benaran ngumpet</b>, bukan cuma transparan. Beda sama <code class="bg-green-100 px-1 rounded">invisible</code> yang masih nangkep space.</p>
+        </div>
+      </div>
+    </div>
+
+    <button class="w-full mt-4 bg-slate-900 text-white font-bold rounded-xl py-3.5">Lanjut ke Langkah 3 →</button>
+  </section>
+
+  <!-- ═══════════ LAYAR B — JELASIN PAKAI KATA-KATA (dummy, statis) ═══════════ -->
+  <!-- Variant B1 : textarea bawah snippet, hasil di bawah -->
+  <section id="b1" class="prototype max-w-4xl mx-auto px-4 py-6 hidden">
+    <div class="bg-white rounded-2xl border border-slate-200 p-6">
+      <h2 class="text-lg font-bold mb-1">Jelaskan pakai kata-katamu sendiri</h2>
+      <p class="text-sm text-slate-500 mb-4">Tidak ada kode buat dipilih — lo yang jelasin. AI bakal nilaik & ngoreksi.</p>
+
+      <div class="bg-slate-900 rounded-xl overflow-hidden mb-5">
+        <pre class="p-4 text-sm text-slate-100 font-mono overflow-x-auto"><code>{<span class="text-yellow-300">isOpen</span> === <span class="text-slate-400">true</span> && &lt;div className="fixed ..."&gt;Modal Kebuka!&lt;/div&gt;}</code></pre>
+      </div>
+
+      <p class="font-medium text-sm mb-2">Gimana cara komputer membaca baris di atas? Jelasin sejelas yang lo bisa.</p>
+      <textarea rows="5" class="w-full border-2 border-slate-200 rounded-xl p-4 text-sm placeholder:text-slate-400 focus:border-blue-400 focus:outline-none resize-y"
+        placeholder="Ketik di sini... misalnya: 'kalo saklarnya kebuka, dia gambar div-nya...'"></textarea>
+
+      <div class="flex items-center justify-between mt-3">
+        <span class="text-xs text-slate-400">📋 0 nempel terdeteksi — bagus, ketik manual.</span>
+        <button class="bg-amber-500 hover:bg-amber-400 text-white font-bold rounded-xl px-6 py-2.5 text-sm">Kirim &amp; Nilai</button>
+      </div>
+
+      <!-- dummy hasil dari AI -->
+      <div class="mt-5 border border-slate-200 rounded-2xl overflow-hidden">
+        <div class="flex items-center justify-between bg-slate-50 px-4 py-3 border-b border-slate-200">
+          <span class="text-sm font-semibold">✨ Hasil Penilaian</span>
+          <div class="flex items-center gap-2">
+            <span class="text-xs px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 font-bold">90% Benar</span>
+          </div>
+        </div>
+        <div class="p-4 space-y-3 text-sm">
+          <div class="bg-green-50 rounded-xl p-3 border border-green-200">
+            <p class="font-semibold text-green-700">✓ Bagian yang bener (otak udah nyambung)</p>
+            <p class="text-green-800 mt-1">Lo paham fungsi sakalarnya dan efek gambarnya — "kalo kebuka, div digambar". Kabel otaknya 4G udah nyala.</p>
+          </div>
+          <div class="bg-red-50 rounded-xl p-3 border border-red-200">
+            <p class="font-semibold text-red-700">✗ 2 istilah yang cara baca lo meleset</p>
+            <p class="text-red-800 mt-1 leading-relaxed">
+              <b>1.</b> "nama fixed" itu bukan nama div — <code class="bg-red-100 px-1 rounded">fixed</code> adalah <b>utility class Tailwind</b> (di CSS = <code class="bg-red-100 px-1 rounded">position:fixed</code>).<br/>
+              <b>2.</b> "deskripsi modal" — teks di dalam &lt;div&gt; itu disebut <b>children / text content</b>.
+            </p>
+          </div>
+          <div class="bg-blue-50 rounded-xl p-3 border border-blue-200">
+            <p class="font-semibold text-blue-700">💡 Cara presisi ala FE senior</p>
+            <p class="text-blue-800 mt-1">"Jika state isOpen true, render div dengan styling Tailwind fixed; di dalamnya render text content 'Modal Kebuka!'"</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Variant B2 : hasil bergaya percakapan / thread penuh -->
+  <section id="b2" class="prototype max-w-4xl mx-auto px-4 py-6 hidden">
+    <div class="bg-white rounded-2xl border border-slate-200 p-6">
+      <h2 class="text-lg font-bold mb-4">Sesi Jelaskan 🧠</h2>
+
+      <!-- prompt -->
+      <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4 mb-4">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-xs font-semibold uppercase text-slate-400">Misi</span>
+          <span class="text-xs font-semibold text-amber-600">+10 XP</span>
+        </div>
+        <div class="code-frame bg-slate-900 rounded-xl mb-3"><pre class="p-3 text-xs text-slate-100 font-mono overflow-x-auto"><code>{isOpen && &lt;div className="fixed"&gt;Modal!&lt;/div&gt;}</code></pre></div>
+        <p class="text-sm text-slate-600">Kenapa tanda <code class="bg-slate-200 px-1 rounded font-mono">&amp;&amp;</code> bisa bikin elemen cuma muncul pas <code class="bg-slate-200 px-1 rounded font-mono">isOpen</code> true? Jelasin dengan santai.</p>
+      </div>
+
+      <!-- jawaban user -->
+      <div class="flex justify-end mb-4">
+        <div class="bg-blue-600 text-white rounded-2xl rounded-br-sm px-4 py-3 max-w-[85%] text-sm leading-relaxed">
+          bacanya kek gitu kayaknya, kalo sakalar kebuka terus tandanya di kanan jadi jalan, div-nya kebuka, kalau false ya nggak digambar
+        </div>
+      </div>
+
+      <!-- hasil AI : dimuat ulang sebagai thread -->
+      <div class="flex gap-3 items-start mb-4">
+        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-white text-sm font-bold shrink-0">AI</div>
+        <div class="bg-slate-50 border border-slate-200 rounded-2xl rounded-tl-sm px-4 py-3 max-w-[85%] w-full text-sm">
+          <p class="font-bold text-slate-800 mb-1">90% bener! Lu udah paham short-circuit-nya 👏</p>
+          <p class="text-slate-700 leading-relaxed mb-3">"kalau true, yang kanan jalan" — itu <b>persis</b> cara kerja <code>&amp;&amp;</code>. Cuma biar makin tajam, ada istilah presisi yang bisa lo pake:</p>
+          <div class="bg-red-50 border border-red-100 rounded-xl p-3 mb-2">
+            <span class="font-semibold text-red-700 block mb-1">📍 Lurusin 1 istilah</span>
+            <span class="text-red-800">"Tanda <code>&&</code>" itu emang <b>short-circuit evaluation</b> — si satpam yang malas: kalau kiri <code>false</code>, dia <b>nggak mau</b> jalan ke kanan.
+          </div>
+          <p class="text-slate-700">Coba sekarang bilang lengkap: <i>"pas <code>isOpen</code> false, <code>&&</code> nggak render kanan; pas true, dia render div."</i> — nah itu kalimat FE senior.</p>
+        </div>
+      </div>
+
+      <button class="w-full bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold rounded-xl py-3 mt-2">Ulangi / Coba yang lebih susah</button>
+    </div>
+  </section>
+
+  <!-- Variant B3 : Compact dark (premium-ish) -->
+  <section id="b3" class="prototype max-w-4xl mx-auto px-4 py-6 hidden">
+    <div class="bg-slate-950 text-slate-100 rounded-2xl p-7">
+      <div class="flex items-center justify-between mb-5">
+        <span class="text-xs font-semibold uppercase tracking-widest text-slate-500">Explain · Bedah Konsep</span>
+        <span class="text-amber-400 font-bold text-sm">+10 XP</span>
+      </div>
+      <pre class="bg-slate-900 rounded-xl p-4 text-sm font-mono mb-5 overflow-x-auto"><code>const <span class="text-amber-300">tone</span> = isDone ? <span class="text-slate-300">'✅'</span> : <span class="text-slate-300">'⏳'</span>;</code></pre>
+      <p class="text-sm text-slate-300 mb-3">Tulis dengan kalimatmu: <b>apa yang dilakukan ternary ini, dan kapan nilai status dipilih?</b></p>
+      <textarea rows="3" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-sm text-slate-100 placeholder:text-slate-500 focus:border-amber-400 focus:outline-none resize-y" placeholder="Ketik jawabanmu..."></textarea>
+      <button class="w-full mt-3 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold rounded-xl py-3">Serahkan ke AI</button>
+
+      <!-- loading state -->
+      <div class="mt-4 flex items-center gap-3 text-sm text-slate-400">
+        <span class="w-5 h-5 border-2 border-slate-500 border-t-amber-400 rounded-full animate-spin"></span>
+        AI lagi bocil jawaban lo...
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ STICKY CONTROLS (prototype-fab, tampil di bawah) ═══════════ -->
+  <div class="fixed bottom-4 inset-x-0 flex justify-center z-50">
+    <div class="bg-slate-900 text-white rounded-full shadow-xl px-3 py-2 flex items-center gap-1 text-xs">
+      <span class="px-2 font-bold text-slate-400">layar:</span>
+      <button data-target="a1" class="tab-btn px-3 py-1.5 rounded-full bg-white/10 font-semibold">A·Kartu</button>
+      <button data-target="a2" class="tab-btn px-3 py-1.5 rounded-full text-slate-300 hover:bg-white/10 font-semibold">A·Panel</button>
+      <span class="mx-1 text-slate-600">|</span>
+      <button data-target="b1" class="tab-btn px-3 py-1.5 rounded-full text-slate-300 hover:bg-white/10 font-semibold">B·Kartu</button>
+      <button data-target="b2" class="tab-btn px-3 py-1.5 rounded-full text-slate-300 hover:bg-white/10 font-semibold">B·Chat</button>
+      <button data-target="b3" class="tab-btn px-3 py-1.5 rounded-full text-slate-300 hover:bg-white/10 font-semibold">B·Dark</button>
+    </div>
+  </div>
+
+  <script>
+    // nyala/hidupin section per variasi
+    const btns = document.querySelectorAll('.tab-btn');
+    const sections = document.querySelectorAll('.prototype');
+    btns.forEach(b => {
+      b.addEventListener('click', () => {
+        sections.forEach(s => s.classList.add('hidden'));
+        const el = document.getElementById(b.dataset.target);
+        if (el) el.classList.remove('hidden');
+        btns.forEach(x => {
+          x.classList.remove('bg-white/10','text-white');
+          x.classList.add('text-slate-300');
+        });
+        b.classList.add('bg-white/10','text-white');
+      });
+    });
+    // default: A1 aktif
+    document.querySelector('[data-target="a1"]').click();
+  </script>
+
+</body>
+</html>
