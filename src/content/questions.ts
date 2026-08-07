@@ -316,4 +316,212 @@ export const questions: Question[] = [
     xp: 10,
     verified: "manual",
   },
+
+  // ════════════════════════════════════════════════════════════
+  // 11. TRACE — Tailwind (Responsive Grid) (M8 — kapal floor 15+)
+  // ════════════════════════════════════════════════════════════
+  {
+    kind: "trace",
+    id: "trace-009",
+    category: "tailwind",
+    title: "Bedah Grid Responsif",
+    snippet: `<div className="grid grid-cols-1 gap-4 md:grid-cols-3">`,
+    steps: [
+      {
+        prompt: "Di layar kecil (mobile), berapa kolom yang kepasang?",
+        options: ["1 kolom", "3 kolom", "4 kolom", "automatic ngikutin konten"],
+        answer: 0,
+        explanation:
+          "Grid itu kabinet rak yang ikut aturan baku dari kiri: `grid-cols-1` = paling depan, kepasang duluan. Di layar kecil, sisanya (`md:grid-cols-3`) nganggur karena prefiks `md:` itu cuma aktif lewat breakpoint medium.",
+      },
+      {
+        prompt: "Kapan baris `md:grid-cols-3` mulai kepasang?",
+        options: [
+          "Pas lebar layar >= 768px (medium)",
+          "Pas lebar layar <= 768px",
+          "Setiap saat, selalu",
+          "Nggak pernah — md cuma buat debug",
+        ],
+        answer: 0,
+        explanation:
+          "`md:` itu kayak pompa yang mulai kerja kalau lebar layar udah sampe titik medium (≥768px di Tailwind default). Di bawah itu, aturan dasar (`grid-cols-1`) yang jalan — mobile-first.",
+      },
+      {
+        prompt: "Fungsi `gap-4` di baris itu apa?",
+        options: [
+          "Beri jarak antar kolom & baris dalam grid",
+          "Beri padding di dalam tiap kolom",
+          "Jarak antar halaman",
+          "Biar grid selalu di tengah",
+        ],
+        answer: 0,
+        explanation:
+          "`gap` itu jarak antar sel di grid — kayak kursi kosong antar meja di ruang meeting. `-4` = 1rem (16px). Kalau mau jarak antar kolom doang, pakai `gap-x`; antar baris pakai `gap-y`.",
+      },
+    ],
+    xp: 10,
+    verified: "manual",
+  },
+
+  // ════════════════════════════════════════════════════════════
+  // 12. TRACE — Tailwind (Flexbox) (M8)
+  // ════════════════════════════════════════════════════════════
+  {
+    kind: "trace",
+    id: "trace-010",
+    category: "tailwind",
+    title: "Bedah Antrian Flexbox",
+    snippet: `<header className="flex items-center justify-between px-4">`,
+    steps: [
+      {
+        prompt: "Tanpa `flex`, header di atas bakal tampil seperti apa?",
+        options: [
+          "Numpuk ke bawah (block)",
+          "Sejajar berjejer ke samping",
+          "Hilang total",
+          "Posisi beneran nggak bisa",
+        ],
+        answer: 0,
+        explanation:
+          "HTML baris itu defaultnya block — kayak tumpukan kardus di gudang, tiap anak numpuk turun. `flex` naikin ke saman jadi lorong; anak-anaknya jadi bisa ngantri samping-samping.",
+      },
+      {
+        prompt: "Apa yang dilakukan `justify-between`?",
+        options: [
+          "Sisanya di antara konten, ujung item nempel ke sisi kanan-kiri",
+          "Gabung semua item jadi satu di tengah",
+          "Beri jarak merata, sebelum-udahnya juga",
+          "Item paling belakang balik ke baris baru",
+        ],
+        answer: 0,
+        explanation:
+          "Sumbu horizontal: `justify-between` ngejar item pertama ke kiri, item terakhir ke kanan, sisanya ditebar di antara. Kayak trukin bola billiard ke dua sisi meja — memanggang separuh.",
+      },
+      {
+        prompt: "`items-center` mengatur apa?",
+        options: [
+          "Align item di sumbu vertikal",
+          "Align item di sumbu horizontal",
+          "Bikin item jadi lingkaran",
+          "Center semua kelas lain juga",
+        ],
+        answer: 0,
+        explanation:
+          "`items-center` (= align-items: center) ngunci posisi di sumbu vertikal, jadi logo dan teks di sampingnya bakal segaris di tengah. Kalau bedah horizontal, itu urusan `justify-*`. Dua-duanya anak dari class `flex`.",
+      },
+    ],
+    xp: 10,
+    verified: "manual",
+  },
+
+  // ════════════════════════════════════════════════════════════
+  // 13. TRACE — JS (Destructuring) (M8)
+  // ════════════════════════════════════════════════════════════
+  {
+    kind: "trace",
+    id: "trace-011",
+    category: "js",
+    title: "Bedah Unpacking Vacuum",
+    snippet: `const [a, b, ...rest] = [1, 2, 3, 4];\nconsole.log(a, b, rest);`,
+    steps: [
+      {
+        prompt: "Setelah unpacking, berapa nilai variabel `a` dan `b`?",
+        options: [
+          "a=1, b=2",
+          "a=1, b=3",
+          "a=1, b=undefined",
+          "error — sintaks nggak valid",
+        ],
+        answer: 0,
+        explanation:
+          "Destructuring ala unpacking vacuum: posisi beneran terima urutan dari kiri. `const [a, b]` ambil index 0 dan 1 dari array → a=1, b=2.",
+      },
+      {
+        prompt: "Apa isi variabel `rest` setelah unpacking?",
+        options: ["[3, 4]", "[2, 3, 4]", "3", "error"],
+        answer: 0,
+        explanation:
+          "`...rest` (rest operator) ngumpulin SISA array yang nggak di-ambil, dan hasilnya SELALU array baru. Bukan angka 3, tapi sisa semuanya: [3, 4].",
+      },
+    ],
+    xp: 10,
+    verified: "auto",
+  },
+
+  // ════════════════════════════════════════════════════════════
+  // 14. TRACE — JS (template literal) (M8)
+  // ════════════════════════════════════════════════════════════
+  {
+    kind: "trace",
+    id: "trace-012",
+    category: "js",
+    title: "Bedah Cetakan Template",
+    snippet: "const n = 42;\nconst msg = `Jawaban: ${n}`;\nconsole.log(msg);",
+    steps: [
+      {
+        prompt: "Setelah masuk ke template literal, apa nilai `msg`?",
+        options: [
+          '"Jawaban: 42"',
+          "'Jawaban: ${n}'",
+          '"Jawaban: [42]"',
+          "error — n bikin string patah",
+        ],
+        answer: 0,
+        explanation:
+          "Backtick itu cetakan: `${n}` dibaca sebagai ekspresi (di-evaluate), bukan teks kosong. Jadi `msg` berisi 'Jawaban: 42'. Kalau pakai kutip biasa, ekspresi di dalamnya nggak dievaluasi dan tetap jadi teks `${n}`.",
+      },
+      {
+        prompt: "Template literal selain string biasa, bisa dipakai untuk?",
+        options: [
+          "Multi-line string tanpa escape \\n",
+          "Hanya satu kata",
+          "Persis sama kayak kutip satu",
+          "Nggak boleh di nested",
+        ],
+        answer: 0,
+        explanation:
+          "Backtick otomatis nyimpen line break asli tanpa perlu `\\n` — paling enak buat blok teks panjang. Ekspresi `${expr}` juga bisa pakai apa pun (fungsi, variabel). Itu kenapa string dinamis modern prefer backtick.",
+      },
+    ],
+    xp: 10,
+    verified: "auto",
+  },
+
+  // ════════════════════════════════════════════════════════════
+  // 15. EXPLAIN — React (State & Re-render) (M8)
+  // ════════════════════════════════════════════════════════════
+  {
+    kind: "explain",
+    id: "explain-004",
+    category: "react",
+    title: "Bedah Siklus Re-render",
+    snippet: `function Counter() {\n  const [count, setCount] = useState(0);\n  return <button onClick={() => setCount(count + 1)}>{count}</button>;\n}`,
+    prompt:
+      "Jelaskan dengan kata-katamu sendiri: pas tombol diklik, apa yang terjadi sampai angka di layar berubah? Kenapa UI-nya update padahal nggak ada HTML yang ditulis ulang?",
+    rubric:
+      "WAJIB disebut: (1) setCount mengubah state, (2) perubahan state memicu re-render komponen, (3) re-render = React memanggil ulang fungsi komponen, (4) nilai baru count dibaca saat render → UI ikut. BONUS kalau jelasin kenapa nggak perlu update DOM manual.",
+    sampleAnswer:
+      "Pas diklik, React jalanin `setCount(count + 1)` — itu kayak nulis angka baru di papan tulis state. Abis itu React otomatis manggil ulang fungsi komponen (re-render). Pas render ulang, fungsi baca nilai state yang paling baru (count = 1), hasilnya dipasang ke JSX. Jadi angka di layar naik — dan semua ini otomatis, beda dengan jaman dulu harus update DOM pakai document.getElementById manual.",
+    xp: 10,
+    verified: "manual",
+  },
+
+  // ════════════════════════════════════════════════════════════
+  // 16. EXPLAIN — React (useEffect cleanup) (M8)
+  // ════════════════════════════════════════════════════════════
+  {
+    kind: "explain",
+    id: "explain-005",
+    category: "react",
+    title: "Bedah Resik-resik useEffect",
+    snippet: `useEffect(() => {\n  const id = setInterval(tick, 1000);\n  return () => clearInterval(id);\n}, []);`,
+    prompt:
+      "Jelaskan dengan kata-katamu sendiri: kenapa `clearInterval(id)` ada di fungsi return? Apa jadinya kalau cleanup itu nggak ada? (petunjuk: bayangin komponen ini dimuat & ditutup berkali-kali)",
+    rubric:
+      "Harus ada: (1) return di useEffect = cleanup function, (2) jalan pas komponen unmount / sebelum effect dijalanin ulang, (3) tanpa clearInterval → interval terus jalan walau komponen udah dihapus → memory leak + callback jalan ke komponen lama. BONUS kalau nyebut: unmount + mount ulang = perlu bersihin.",
+    sampleAnswer:
+      "Return yang ada di dalam useEffect itu 'cleanup': karcis pulang yang dijalankan pas komponen mau dihapus (unmount). `clearInterval(id)` berhentikan timer biar nggak jalan terus. Kalau cleanup ilang, interval bakal tetap nembak setiap 1 detik walau komponen udah nggak ada — itu leak: si pencuri jam tangan terus nyuri padahal toko udah tutup, bikin memory nggelindir doang.",
+    xp: 10,
+    verified: "manual",
+  },
 ]

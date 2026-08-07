@@ -206,6 +206,150 @@ export const translations: Record<string, QuestionTrans> = {
     sampleAnswer:
       "'C' runs first because it's plain synchronous code processed immediately at the cashier (Call stack). When the cashier is free, the JS checks its waiting lines. Promises enter the Microtask queue (VIP, priority), while setTimeout enters Macrotask (regular). Even with a 0ms delay, the Event Loop has an iron rule: drain the VIP queue first ('B' comes out), then serve the regular line ('A').",
   },
+  "trace-009": {
+    title: "Responsive Grid Dissection",
+    steps: [
+      {
+        prompt: "On a small (mobile) screen, how many columns are applied?",
+        options: [
+          "1 column",
+          "3 columns",
+          "4 columns",
+          "auto — follows content",
+        ],
+        explanation:
+          "A grid is a shelving system that follows rules left-to-right: `grid-cols-1` comes first and applies by default. On small screens the rest (`md:grid-cols-3`) is idle because the `md:` prefix only activates past the medium breakpoint.",
+      },
+      {
+        prompt: "When does `md:grid-cols-3` start applying?",
+        options: [
+          "When the viewport is >= 768px (medium)",
+          "When the viewport is <= 768px",
+          "Always, no matter the size",
+          "Never — md is only for debugging",
+        ],
+        explanation:
+          "`md:` is like a pump that only starts when the viewport reaches the medium breakpoint (≥768px in Tailwind's default). Below that, the base rule (`grid-cols-1`) applies — mobile-first.",
+      },
+      {
+        prompt: "What does `gap-4` do in this line?",
+        options: [
+          "Adds spacing between grid columns & rows",
+          "Adds padding inside each column",
+          "Spacing between pages",
+          "Centers the grid",
+        ],
+        explanation:
+          "`gap` is the space between grid cells — like empty chairs between desks in a meeting room. `-4` = 1rem (16px). Want only column gaps? Use `gap-x`; only row gaps? `gap-y`.",
+      },
+    ],
+  },
+  "trace-010": {
+    title: "Flexbox Queue Dissection",
+    steps: [
+      {
+        prompt: "Without `flex`, how would the header above render?",
+        options: [
+          "Stacked vertically (block)",
+          "Side by side in a row",
+          "Hidden entirely",
+          "Positioned absolutely",
+        ],
+        explanation:
+          "Block elements stack like cardboard boxes in a warehouse — each child drops below the previous. `flex` turns the container into a hallway; children now line up side by side.",
+      },
+      {
+        prompt: "What does `justify-between` do?",
+        options: [
+          "First item hugs left, last hugs right, the rest spread between",
+          "Groups all items together in the center",
+          "In waves aventura",
+          "Sends the last item to a new row",
+        ],
+        explanation:
+          "On the horizontal axis, `justify-between` pins the first item to the left, the last to the right, and spreads everything between. Like two billiard balls held against the table edges — no leftover space on the sides.",
+      },
+      {
+        prompt: "What does `items-center` control?",
+        options: [
+          "Alignment on the vertical axis",
+          "Alignment on the horizontal axis",
+          "Surface centering",
+          "Also centers every other class",
+        ],
+        explanation:
+          "`items-center` (= align-items: center) locks the vertical axis, so a logo and neighboring text sit on the same middle line. Horizontal axis is `justify-*`'s job. Both are children of the `flex` class.",
+      },
+    ],
+  },
+  "trace-011": {
+    title: "Vacuum Unpacking",
+    steps: [
+      {
+        prompt: "After unpacking, what are the values of `a` and `b`?",
+        options: [
+          "a=1, b=2",
+          "a=1, b=3",
+          "a=1, b=undefined",
+          "error — invalid syntax",
+        ],
+        explanation:
+          "Destructuring is vacuum unpacking by position: the left spot receives from the left. `const [a, b]` takes index 0 and 1 → a=1, b=2.",
+      },
+      {
+        prompt: "What's in the `rest` variable after unpacking?",
+        options: ["[3, 4]", "[2, 3, 4]", "3", "error"],
+        explanation:
+          "`...rest` (rest operator) collects the REMAINING array items and ALWAYS results in a new array. Not the number 3 — the whole leftover: [3, 4].",
+      },
+    ],
+  },
+  "trace-012": {
+    title: "Template Literal Mold",
+    steps: [
+      {
+        prompt:
+          "After going into the template literal, what's the value of `msg`?",
+        options: [
+          '"Jawaban: 42"',
+          "'Jawaban: ${n}'",
+          '"Jawaban: [42]"',
+          "Good — n breaks the string",
+        ],
+        explanation:
+          "Backticks are a mold: `${n}` is read as an expression (evaluated), not plain text. So `msg` equals 'Jawaban: 42'. With ordinary quotes, the inner expression is not evaluated and stays literal `${n}`.",
+      },
+      {
+        prompt: "Besides normal strings, what can template literals do?",
+        options: [
+          "Multi-line strings without \\n escapes",
+          "Only single words",
+          "It is a normal quote",
+          "Cannot be nested",
+        ],
+        explanation:
+          "Backticks keep line breaks as-is — no `\\n` needed — great for long text blocks. `${expr}` accepts any expression (functions, variables). That's why dynamic strings prefer backticks.",
+      },
+    ],
+  },
+  "explain-004": {
+    title: "The Re-render Cycle",
+    prompt:
+      "Explain in your own words: when the button is clicked, what happens until the number on screen changes? Why does the UI update even though no HTML is being rewritten?",
+    rubric:
+      "MUST mention: (1) setCount changes state, (2) state changes trigger a re-render, (3) re-render = React calls the component function again, (4) the new count value is read during render → UI follows. BONUS for explaining why no manual DOM update is needed.",
+    sampleAnswer:
+      "When clicked, React runs `setCount(count + 1)` — like writing a new number on the state whiteboard. React then automatically calls the component function again (re-render). During that render the function reads the freshest count value (1), and the JSX picks it up. The number ticks up — completely automated, unlike the old days of manual document.getElementById DOM updates.",
+  },
+  "explain-005": {
+    title: "useEffect Spring Cleaning",
+    prompt:
+      "Explain in your own words: why is `clearInterval(id)` inside the return? What happens if there's no cleanup? (hint: imagine the component mounts and unmounts many times)",
+    rubric:
+      "MUST mention: (1) return in useEffect = cleanup function, (2) runs on unmount (and before the next effect run), (3) without clearInterval the interval keeps firing after the component is gone → memory leak / stale callbacks. Bonus: unmount + remount needs cleanup.",
+    sampleAnswer:
+      "The return inside useEffect is the 'cleanup': a closing-shift ticket that runs when the component is about to be removed (unmount). `clearInterval(id)` stops the timer so it doesn't run forever. Without cleanup, the interval keeps shooting every second even after the component is gone — a leak: the watch-thief keeps stealing after the shop closed. Memory slowly bloats for nothing.",
+  },
   "explain-003": {
     title: "Seat Belt for Optional",
     prompt:
