@@ -61,11 +61,16 @@ function extractLastJson(text: string): unknown | null {
 function parseGrade(text: string, model: string): GradeResult {
   const j = extractLastJson(text)
   if (!j) return { score: 0, feedback: text, corrections: [], model }
-  const score = typeof j.score === "number" ? Math.max(0, Math.min(100, Math.round(j.score))) : 0
+  const score =
+    typeof j.score === "number"
+      ? Math.max(0, Math.min(100, Math.round(j.score)))
+      : 0
   return {
     score,
     feedback: typeof j.feedback === "string" ? j.feedback : "",
-    corrections: Array.isArray(j.corrections) ? j.corrections.filter((c): c is string => typeof c === "string") : [],
+    corrections: Array.isArray(j.corrections)
+      ? j.corrections.filter((c): c is string => typeof c === "string")
+      : [],
     model,
   }
 }
@@ -73,7 +78,7 @@ function parseGrade(text: string, model: string): GradeResult {
 export async function gradeExplain(
   q: ExplainQuestion,
   answer: string,
-  mode: "manual" | "pasted",
+  mode: "manual" | "pasted"
 ): Promise<GradeResult> {
   const key = process.env.NVIDIA_API_KEY
   if (!key) throw new Error("NVIDIA_API_KEY tidak ada di env")
@@ -81,7 +86,10 @@ export async function gradeExplain(
 
   const res = await fetch(NIM_URL, {
     method: "POST",
-    headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
+    headers: {
+      Authorization: `Bearer ${key}`,
+      "Content-Type": "application/json",
+    },
     body: JSON.stringify({
       model,
       messages: [{ role: "user", content: buildPrompt(q, answer, mode) }],
@@ -104,7 +112,8 @@ export async function gradeExplain(
 
 // Vercel serverless handler (Web API)
 export default async function handler(req: Request): Promise<Response> {
-  if (req.method !== "POST") return Response.json({ error: "Method not allowed" }, { status: 405 })
+  if (req.method !== "POST")
+    return Response.json({ error: "Method not allowed" }, { status: 405 })
   let body: { question?: ExplainQuestion; answer?: string; mode?: string }
   try {
     body = await req.json()
@@ -114,12 +123,23 @@ export default async function handler(req: Request): Promise<Response> {
   const q = body.question
   const answer = (body.answer ?? "").trim()
   if (!q?.id || !q.prompt || !q.rubric || !answer) {
-    return Response.json({ error: "question.id/prompt/rubric + answer wajib" }, { status: 400 })
+    return Response.json(
+      { error: "question.id/prompt/rubric + answer wajib" },
+      { status: 400 }
+    )
   }
-  if (answer.length > 4000) return Response.json({ error: "Jawaban maks 4000 karakter" }, { status: 400 })
+  if (answer.length > 4000)
+    return Response.json(
+      { error: "Jawaban maks 4000 karakter" },
+      { status: 400 }
+    )
 
   try {
-    const result = await gradeExplain(q, answer, body.mode === "pasted" ? "pasted" : "manual")
+    const result = await gradeExplain(
+      q,
+      answer,
+      body.mode === "pasted" ? "pasted" : "manual"
+    )
     return Response.json(result)
   } catch (e) {
     const msg = e instanceof Error ? e.message : "unknown"

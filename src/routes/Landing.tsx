@@ -33,11 +33,15 @@ export function Landing() {
           <CardTitle>Latihan hari ini</CardTitle>
         </CardHeader>
         <CardContent className="flex flex-col gap-2">
-          <p className="text-sm text-muted-foreground">
-            {questions.length} soal siap — {traceCount} bedah kode + {explainCount}{" "}
-            jelasin (dinilai AI).
+          <p className="text-muted-foreground text-sm">
+            {questions.length} soal siap — {traceCount} bedah kode +{" "}
+            {explainCount} jelasin (dinilai AI).
           </p>
-          <Button render={<Link to="/session" />} nativeButton={false} className="w-fit">
+          <Button
+            render={<Link to="/session" />}
+            nativeButton={false}
+            className="w-fit"
+          >
             Mulai sesi
           </Button>
         </CardContent>
@@ -50,8 +54,10 @@ export function Landing() {
             <CardContent className="flex items-center justify-between gap-4 py-4">
               <div className="flex flex-col gap-1">
                 <span className="font-medium">{q.title}</span>
-                <span className="text-xs text-muted-foreground">
-                  {q.kind === "trace" ? "Bedah kode bertingkat" : "Jelasin pakai kata-kata"}
+                <span className="text-muted-foreground text-xs">
+                  {q.kind === "trace"
+                    ? "Bedah kode bertingkat"
+                    : "Jelasin pakai kata-kata"}
                 </span>
               </div>
               <Badge variant="secondary">{categoryLabel[q.category]}</Badge>

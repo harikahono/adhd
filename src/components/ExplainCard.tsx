@@ -20,7 +20,7 @@ export function ExplainCard({
   onDone,
 }: {
   question: ExplainQuestion
-  onXp: (xp: number) => void
+  onXp: (xp: number, mode: "manual" | "pasted") => void
   onDone: () => void
 }) {
   const [answer, setAnswer] = useState("")
@@ -36,13 +36,17 @@ export function ExplainCard({
       const res = await fetch("/api/grade", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ question, answer, mode: pasted ? "pasted" : "manual" }),
+        body: JSON.stringify({
+          question,
+          answer,
+          mode: pasted ? "pasted" : "manual",
+        }),
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error ?? res.statusText)
       setResult(data)
       setPhase("done")
-      onXp(question.xp)
+      onXp(question.xp, pasted ? "pasted" : "manual")
     } catch {
       setPhase("error")
     }
@@ -56,7 +60,13 @@ export function ExplainCard({
             {pasted ? "Ditempel" : "Ditulis Manual"}
           </Badge>
           {phase === "done" && result && (
-            <Badge>{result.score >= 80 ? "Lumayan!" : result.score >= 50 ? "Bisa lebih" : "Perlu dibedah ulang"}</Badge>
+            <Badge>
+              {result.score >= 80
+                ? "Lumayan!"
+                : result.score >= 50
+                  ? "Bisa lebih"
+                  : "Perlu dibedah ulang"}
+            </Badge>
           )}
         </div>
 
@@ -70,10 +80,14 @@ export function ExplainCard({
               className="min-h-40"
             />
             <div className="flex items-center justify-between">
-              <p className="text-xs text-muted-foreground">
-                Tag integritas otomatis: paste = &ldquo;Ditempel&rdquo;. Kejujuran pilihan lo.
+              <p className="text-muted-foreground text-xs">
+                Tag integritas otomatis: paste = &ldquo;Ditempel&rdquo;.
+                Kejujuran pilihan lo.
               </p>
-              <Button onClick={submit} disabled={phase === "loading" || answer.trim().length < 10}>
+              <Button
+                onClick={submit}
+                disabled={phase === "loading" || answer.trim().length < 10}
+              >
                 {phase === "loading" ? "Menilai..." : "Kirim jawaban"}
               </Button>
             </div>
@@ -81,12 +95,17 @@ export function ExplainCard({
         )}
 
         {phase === "error" && (
-          <div className="rounded-lg border border-destructive/40 bg-destructive/5 p-4 text-sm">
-            <p className="font-semibold text-destructive">Gagal menilai.</p>
-            <p className="mt-1 text-muted-foreground">
-              Layanan AI grading lagi bermasalah. Coba lagi nanti — progress trace lo aman.
+          <div className="border-destructive/40 bg-destructive/5 rounded-lg border p-4 text-sm">
+            <p className="text-destructive font-semibold">Gagal menilai.</p>
+            <p className="text-muted-foreground mt-1">
+              Layanan AI grading lagi bermasalah. Coba lagi nanti — progress
+              trace lo aman.
             </p>
-            <Button variant="outline" className="mt-3" onClick={() => setPhase("writing")}>
+            <Button
+              variant="outline"
+              className="mt-3"
+              onClick={() => setPhase("writing")}
+            >
               Coba lagi
             </Button>
           </div>
@@ -94,21 +113,25 @@ export function ExplainCard({
 
         {phase === "done" && result && (
           <div className="flex flex-col gap-3">
-            <div className="rounded-lg border bg-muted/50 p-4">
+            <div className="bg-muted/50 rounded-lg border p-4">
               <p className="text-2xl font-bold">{result.score}/100</p>
-              <p className="mt-2 text-sm whitespace-pre-wrap">{result.feedback}</p>
+              <p className="mt-2 text-sm whitespace-pre-wrap">
+                {result.feedback}
+              </p>
             </div>
             {result.corrections.length > 0 && (
               <div className="flex flex-col gap-1">
                 <p className="text-sm font-medium">Istilah yang meleset:</p>
                 {result.corrections.map((c, i) => (
-                  <p key={i} className="text-sm text-muted-foreground">
+                  <p key={i} className="text-muted-foreground text-sm">
                     • {c}
                   </p>
                 ))}
               </div>
             )}
-            <p className="text-xs text-muted-foreground">model: {result.model}</p>
+            <p className="text-muted-foreground text-xs">
+              model: {result.model}
+            </p>
             <Button onClick={onDone} className="w-fit">
               Soal berikutnya →
             </Button>

@@ -13,6 +13,7 @@
     "verify:content": "tsx scripts/verify-content.ts",
     "verify:progress": "tsx scripts/verify-progress.ts",
     "verify:grade": "tsx scripts/verify-grade.ts",
+    "verify:session": "tsx scripts/verify-session.ts",
     "preview": "vite preview"
   },
   "dependencies": {

@@ -57,7 +57,12 @@ pnpm format           # prettier
 - M3 ✅ fondasi app (scaffold, shadcn, router, repo)
 - M4 ✅ sesi interaktif trace (MCQ bertingkat + feedback instan + XP & streak localStorage)
 - M5 ✅ explain AI (`api/grade.ts` → NVIDIA NIM `deepseek-ai/deepseek-v4-flash-0731`, `ExplainCard`, `verify:grade`)
-- M6 belum: dashboard streak/XP penuh.
+- M6 ✅ sesi harian sampling + dashboard statistik (streak, XP, per-kategori, rasio manual/ditempel)
+
+### M6 catatan
+- `src/lib/session.ts` — `buildSession(questions, todayIso)` = acak deterministik (seed tanggal): 3-5 trace + 1-2 explain, trace dulu. Cek: `pnpm verify:session`.
+- `useProgress` schema: `{xp, streak, todaySession, doneByCategory, manual, pasted}` — `computeNext` + `recordDone` pure (di-test `verify:progress`). Data lama (`adhd.progress` legacy) di-merge otomatis, nggak perlu reset.
+- `Dashboard` render statistik dari localStorage; `Session` panggil `markDone` per soal selesai + mode explain (manual/pasted).
 
 ### M5 catatan
 - `pnpm verify:grade` butuh `NVIDIA_API_KEY` di env (tanpa key → skip warning, exit 0).

@@ -8,7 +8,9 @@ import type { ExplainQuestion } from "../src/content/types"
 
 const key = process.env.NVIDIA_API_KEY
 if (!key) {
-  console.warn("⚠ NVIDIA_API_KEY kosong — skip. Salin .env.example → .env dan isi key.")
+  console.warn(
+    "⚠ NVIDIA_API_KEY kosong — skip. Salin .env.example → .env dan isi key."
+  )
   process.exit(0)
 }
 
@@ -18,7 +20,8 @@ const q: ExplainQuestion = {
   category: "react",
   title: "Satpam yang Malas",
   snippet: `{isOpen === true && <div className="fixed">Modal Kebuka!</div>}`,
-  prompt: "Jelaskan dengan kata-katamu sendiri: gimana cara komputer membaca baris di atas?",
+  prompt:
+    "Jelaskan dengan kata-katamu sendiri: gimana cara komputer membaca baris di atas?",
   rubric:
     "WAJIB disebut: (1) conditional rendering, (2) && = short-circuit, (3) false → bagian kanan nggak dirender, (4) true → <div> dirender.",
   sampleAnswer: "",
