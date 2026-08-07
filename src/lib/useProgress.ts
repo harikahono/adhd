@@ -26,6 +26,17 @@ export const EMPTY_PROGRESS: Progress = {
   pasted: 0,
 }
 
+// streak efektif: 0 kalau sesi terakhir > 1 hari yang lalu (putus), bukan angka lama yang bohong
+export function effectiveStreak(p: Progress, todayIso: string): number {
+  if (!p.todaySession) return 0
+  const yesterday = new Date(Date.parse(todayIso) - 24 * 3600 * 1000)
+    .toISOString()
+    .slice(0, 10)
+  if (p.todaySession === todayIso || p.todaySession === yesterday)
+    return p.streak
+  return 0
+}
+
 // dipisah biar bisa di-test (verify-progress)
 export function computeNext(
   p: Progress,

@@ -2,7 +2,12 @@
 // verify-progress.ts — cek logika streak, XP, & statistik (M6b)
 // Pakai: pnpm run verify:progress
 // ============================================================
-import { computeNext, EMPTY_PROGRESS, recordDone } from "../src/lib/useProgress"
+import {
+  computeNext,
+  effectiveStreak,
+  EMPTY_PROGRESS,
+  recordDone,
+} from "../src/lib/useProgress"
 import type { Question } from "../src/content/types"
 
 let fail = 0
@@ -91,6 +96,19 @@ const explainReact: Question = {
     0
   )
   check("legacy xp dipertahankan", merged.xp, 50)
+}
+// effectiveStreak: putus kalau gap > 1 hari (fix M6b)
+{
+  const D3 = "2026-08-10"
+  const base = computeNext(EMPTY_PROGRESS, 10, D1) // sesi selesai D1 → streak 1
+  check("streak aktif hari yang sama", effectiveStreak(base, D1), 1)
+  check("streak aktif besok (belum sesi)", effectiveStreak(base, D2), 1)
+  check("streak putus setelah gap", effectiveStreak(base, D3), 0)
+  check(
+    "streak putus total kalau belum pernah sesi",
+    effectiveStreak(EMPTY_PROGRESS, D1),
+    0
+  )
 }
 
 console.log(fail === 0 ? "\n✅ Progress valid" : `\n❌ ${fail} masalah`)
