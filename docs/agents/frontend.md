@@ -32,6 +32,12 @@
 - Ketik ketat TS — `pnpm typecheck` harus ijo.
 - File path relatif: pakai alias `@/...`, bukan `../../`.
 
+## i18n (ID/EN)
+- Semua UI string lewat `useI18n().t(key, params?)` — **nggak boleh hardcode** teks di komponen.
+- Dict: `src/i18n/strings.ts` (bilingual `id`/`en`, key type-safe `StringKey`). Toggle: `LangToggle` (dipasang global di `App.tsx`, pojok kanan atas).
+- Konten soal: terjemahan EN di `src/content/translations.ts` per `q.id`, digabung via `src/lib/localize.ts` (`localize(q, lang)` / `localizeQuestions(questions, lang)`). Soal asli (`questions.ts`) tetap sumber kebenaran — tambah terjemahan EN setelah bikin soal baru.
+- AI grading (explain): `api/grade.ts` terima `lang` — feedback ikut bahasa.
+
 ## Menambah halaman
 1. Bikin file di `src/routes/`.
 2. Tambah `<Route>` di `App.tsx`.

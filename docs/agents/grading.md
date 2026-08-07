@@ -1,6 +1,6 @@
 # Konteks Agent — AI Grading / Explain (M5, LIVE)
 
-Detail lengkap ada di `docs/adhd-prd-v1.4.md`. Ringkasan kondisi saat ini:
+Detail lengkap ada di `docs/adhd-prd-v1.5.md`. Ringkasan kondisi saat ini:
 
 ## Sudah dibangun
 - `api/grade.ts` — serverless function (pola Vercel Web API handler) yang memanggil **NVIDIA NIM** buat menilai jawaban Explain.

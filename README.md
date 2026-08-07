@@ -21,6 +21,7 @@ pakai kata-kata lo sendiri — dua skill yang paling cepat tumpul.
 - **Anti-paste, bukan anti-cheat** — tag "Ditulis Manual vs Ditempel", bukan
   blokir. Data pribadi di localStorage, 100% statis + 1 serverless function.
 - **Streak & XP** — biar balik lagi besok.
+- **Bilingual (ID/EN)** — switch bahasa di pojok kanan; konten soal & koreksi AI ikut bahasa yang dipilih.
 
 ## Stack
 
@@ -46,10 +47,11 @@ pnpm build           # build produksi
 
 ```
 src/
-  content/       # soal (types.ts + questions.ts)
+  content/       # soal (types.ts + questions.ts) + terjemahan EN (translations.ts)
+  i18n/          # switch bahasa: strings.ts + I18nProvider (index.tsx)
   routes/        # landing, sesi, dashboard
-  components/    # ui/ (shadcn) + shared
-  lib/           # util
+  components/    # ui/ (shadcn) + shared (ExplainCard, LangToggle)
+  lib/           # util (session, useProgress, localize)
 docs/            # PRD + prototype desain
 scripts/         # tooling dev (verify-content)
 api/             # serverless AI grading (M5)
@@ -60,12 +62,13 @@ api/             # serverless AI grading (M5)
 - [x] M1 — Konten: 10 soal (7 trace + 3 explain)
 - [x] M2 — Verifikasi konten (auto-run snippet + cek jawaban)
 - [x] M3 — Fondasi app: Vite + shadcn + Router (repo ini)
-- [ ] M4 — Sesi interaktif (bedah kode bertingkat)
-- [ ] M5 — Explain dinilai AI (serverless, NVIDIA NIM)
-- [ ] M6 — Dashboard: streak & XP (localStorage)
-- [ ] M7 — Landing + polish + deploy Vercel
+- [x] M4 — Sesi interaktif (bedah kode bertingkat)
+- [x] M5 — Explain dinilai AI (serverless, NVIDIA NIM)
+- [x] M6 — Dashboard: streak & XP (localStorage) + fix streak putus
+- [x] M7 — Switch bahasa ID/EN (UI + konten + AI grading)
+- [ ] M8 — Landing polish + deploy Vercel
 
-Detail lengkap: [docs/adhd-prd-v1.4.md](docs/adhd-prd-v1.4.md)
+Detail lengkap: [docs/adhd-prd-v1.5.md](docs/adhd-prd-v1.5.md)
 
 ## Lisensi
 

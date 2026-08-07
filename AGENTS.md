@@ -2,7 +2,7 @@
 
 A.D.H.D. (Any Dummy Handles Debugging) — "AI Detox for Human Developers":
 latihan harian buat pulihkan kemampuan baca & nalar kode manual, gaya Duolingo.
-Bedah kode bertingkat + mode "jelasin" yang dinilai AI. Bahasa konten: **Indonesia**.
+Bedah kode bertingkat + mode "jelasin" yang dinilai AI. Bilingual: **ID/EN** (switch di pojok kanan).
 
 ## Stack (yang nggak boleh bego)
 
@@ -49,7 +49,8 @@ pnpm format           # prettier
 - `src/content/` — data soal (statis, ditampilkan via import).
 - `src/components/` — `ui/` (shadcn) + shared.
 - `api/grade.ts` — serverless AI grading (M5), NVIDIA NIM.
-- `docs/` — PRD `adhd-prd-v1.4.md` + `agents/` (konteks agent per concern) + `prototype/`.
+- `src/i18n/` — switch bahasa ID/EN: `strings.ts` (UI strings), `index.tsx` (`I18nProvider` + `useI18n().t()`), `components/LangToggle.tsx`.
+- `docs/` — PRD `adhd-prd-v1.5.md` + `agents/` (konteks agent per concern) + `prototype/`.
 
 ## Progress (milestone)
 
@@ -58,6 +59,13 @@ pnpm format           # prettier
 - M4 ✅ sesi interaktif trace (MCQ bertingkat + feedback instan + XP & streak localStorage)
 - M5 ✅ explain AI (`api/grade.ts` → NVIDIA NIM `deepseek-ai/deepseek-v4-flash-0731`, `ExplainCard`, `verify:grade`)
 - M6 ✅ sesi harian sampling + dashboard statistik (streak, XP, per-kategori, rasio manual/ditempel)
+- M7 ✅ switch bahasa ID/EN — UI (`t()`), konten soal (`translations.ts`), AI grading (`lang` param)
+
+### M7 catatan (i18n)
+- UI string: WAJIB lewat `useI18n().t(key, params?)` — jangan hardcode teks di komponen. Dict di `src/i18n/strings.ts`, type-safe (`StringKey`).
+- Konten soal: asli (`questions.ts`) tetap kebenaran + diverifikasi. Terjemahan EN di `src/content/translations.ts` (per `q.id`), digabung via `localize(q, lang)`. Snippet / `answer` index / `xp` nggak diterjemahkan.
+- `api/grade.ts`: `gradeExplain(q, answer, mode, lang)` — prompt EN↔ID, feedback ikut bahasa; `body.lang` di handler.
+- Konten baru (soal EN/ID) → tulis soal asli dulu, terus tambah entry `translations` buat EN-nya.
 
 ### M6 catatan
 - `src/lib/session.ts` — `buildSession(questions, todayIso)` = acak deterministik (seed tanggal): 3-5 trace + 1-2 explain, trace dulu. Cek: `pnpm verify:session`.
@@ -67,4 +75,4 @@ pnpm format           # prettier
 ### M5 catatan
 - `pnpm verify:grade` butuh `NVIDIA_API_KEY` di env (tanpa key → skip warning, exit 0).
 - Model reasoning (mis. `stepfun-ai/step-3.7-flash`) nggak didukung — output di `message.reasoning`, bukan `content`. Jebakan ini udah di-dokumentasiin di `docs/agents/grading.md`.
-Baca `docs/adhd-prd-v1.4.md` buat detail spesifikasi sebelum kerjaan yang melibatkan fitur baru.
+Baca `docs/adhd-prd-v1.5.md` buat detail spesifikasi sebelum kerjaan yang melibatkan fitur baru.

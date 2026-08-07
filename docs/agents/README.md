@@ -5,7 +5,7 @@ AGENTS.md di root = ringkasan <150 baris (selalu dimuat). File di sini = detail
 yang agent tarik hanya kalau menyentuh area itu — biar token nggak kebuang.
 
 ## Ref Arch Folder / Milestone
-- [content.md](content.md) — skema & gimana bikin/ubah soal (`src/content/`). M1-M2.
+- [content.md](content.md) — skema & gimana bikin/ubah soal (`src/content/`). M1-M2; dipakai semua batch konten (M8+).
 - [frontend.md](frontend.md) — pola SPA, Base UI `render`, react-router v8, shadcn. M3; dipakai M4/M6/M7.
 - [grading.md](grading.md) — AI grading Explain (NVIDIA NIM), `api/grade.ts`. M5.
 

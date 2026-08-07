@@ -1,7 +1,9 @@
-# Product Requirement Document (PRD) - MVP v1.4
+# Product Requirement Document (PRD) - MVP v1.5
 ## Nama Proyek: **A.D.H.D.** — *Any Dummy Handles Debugging*
 **Tagline:** AI Detox for Human Developers
-**Author:** Bintang | **Status:** Draft v1.4 (Pasca Grill) | **Tanggal:** Agustus 2026
+**Author:** Bintang | **Status:** Draft v1.5 | **Tanggal:** Agustus 2026
+
+> **Changelog dari v1.4:** Switch bahasa **ID/EN** (keputusan sesi 9-10 Agustus 2026) — semua UI string lewat `useI18n().t()` (`src/i18n/`), terjemahan konten soal di `src/content/translations.ts` (snippet/answer/xp tetap dari soal asli), dan AI grading explain ikut bahasa via param `lang` di `api/grade.ts`. Bilingual = produk bisa dipakai dev internasional, bukan cuma lokal. Open item §11 no.2 (komposisi sesi) **selesai** — 3-5 trace + 1-2 explain per hari (lihat `verify:session`).
 
 > **Changelog dari v1.3:** Sesi grill lanjutan (9 Agustus 2026) — format soal berubah jadi **"Bedah Kode Bertingkat"** (satu snippet dipecah jadi MCQ kecil per bagian), Modul B **diredefinisi total** dari "Pseudocode-to-Syntax" jadi **"Jelasin Pakai Kata-kata"** (free-text dinilai AI via NVIDIA NIM — keputusan user, pola proxy mengikuti contract-policy), arsitektur berubah dari "zero-AI" jadi "statis + 1 titik AI proxy", scaffold dikunci ke shadcn `init -t vite` + React Router v8, tracing 100% MCQ. Detail di Section 12.
 
@@ -142,9 +144,9 @@ Halaman sederhana untuk menjaga konsistensi latihan harian (*streak*), mirip kon
 | Framing | Portofolio-first | Keputusan user; fase SaaS jadi future work |
 | Anti-ekstensi AI browser | Tidak ada klaim blokir; mitigasi permukaan interaksi saja | Secara teknis tidak bisa dijamin dari sisi web |
 
-**Open items (menunggu konfirmasi user):**
-1. Deploy final: Vercel (dengan serverless function) vs Laragon lokal (proxy PHP). Rekomendasi: Vercel — satu tempat, otomatis, pattern function = proxy.
-2. Komposisi sesi harian: rasio soal trace vs explain per sesi.
+**Open items (status v1.5):**
+1. Deploy final: Vercel (dengan serverless function) vs Laragon lokal (proxy PHP). Rekomendasi: Vercel — satu tempat, otomatis, pattern function = proxy. **Status: open — belum diputuskan.**
+2. Komposisi sesi harian: rasio soal trace vs explain per sesi. **Status: SELESAI** — 3-5 trace + 1-2 explain per hari, acak deterministik per tanggal (lihat `verify:session`).
 
 ---
 
