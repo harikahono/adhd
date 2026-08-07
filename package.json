@@ -12,6 +12,7 @@
     "typecheck": "tsc --noEmit",
     "verify:content": "tsx scripts/verify-content.ts",
     "verify:progress": "tsx scripts/verify-progress.ts",
+    "verify:grade": "tsx scripts/verify-grade.ts",
     "preview": "vite preview"
   },
   "dependencies": {

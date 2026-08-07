@@ -4,12 +4,17 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
+import { ExplainCard } from "@/components/ExplainCard"
 import { questions } from "@/content/questions"
-import type { Step, TraceQuestion } from "@/content/types"
+import type { Question, Step, TraceQuestion } from "@/content/types"
 import { useProgress } from "@/lib/useProgress"
 
-const trace = questions.filter((q): q is TraceQuestion => q.kind === "trace")
-const categoryLabel: Record<TraceQuestion["category"], string> = {
+// urutan sesi: trace dulu, explain belakangan (PRD: 3-5 trace + 1-2 explain)
+const session: Question[] = [
+  ...questions.filter((q) => q.kind === "trace"),
+  ...questions.filter((q) => q.kind === "explain"),
+]
+const categoryLabel: Record<Question["category"], string> = {
   js: "JavaScript",
   react: "React",
   tailwind: "Tailwind",
@@ -32,10 +37,10 @@ export function Session() {
   const [status, setStatus] = useState<Status>("idle")
   const [chosen, setChosen] = useState<number | null>(null)
   const [gained, setGained] = useState(0)
-  const done = qIdx >= trace.length
+  const done = qIdx >= session.length
 
   // ponytail: satu komponen — trace step diperlakukan sebagai urutan lurus (no per-step xp)
-  const question = trace[qIdx]
+  const question = session[qIdx]
 
   if (done) {
     return (
@@ -46,7 +51,7 @@ export function Session() {
           </CardHeader>
           <CardContent className="flex flex-col gap-4">
             <p className="text-sm text-muted-foreground">
-              Kamu ngerjain {trace.length} soal bedah kode. XP yang didapat hari ini:{" "}
+              Kamu ngerjain {session.length} soal. XP yang didapat hari ini:{" "}
               <span className="font-semibold text-foreground">+{gained}</span>.
             </p>
             <div className="flex gap-2">
@@ -58,6 +63,40 @@ export function Session() {
         <Button render={<Link to="/" />} nativeButton={false}>
           Kembali ke beranda
         </Button>
+      </div>
+    )
+  }
+
+  // ── soal explain: textarea + AI grading ──
+  if (question.kind === "explain") {
+    return (
+      <div className="mx-auto flex min-h-svh max-w-2xl flex-col gap-6 p-6">
+        <header className="flex items-center justify-between pt-2">
+          <div className="flex items-center gap-2">
+            <Badge variant="outline">{question.id}</Badge>
+            <Badge variant="secondary">{categoryLabel[question.category]}</Badge>
+          </div>
+          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+            <Badge variant="outline">XP: {xp}</Badge>
+            <Badge variant="outline">🔥 {streak}</Badge>
+          </div>
+        </header>
+        <div className="flex flex-col gap-3">
+          <h1 className="text-xl font-bold tracking-tight">{question.title}</h1>
+          <CodeBlock code={question.snippet} />
+          <p className="text-sm text-muted-foreground">{question.prompt}</p>
+          <p className="text-xs text-muted-foreground">
+            Soal {qIdx + 1}/{session.length} · Jelasin pakai kata-kata (dinilai AI)
+          </p>
+        </div>
+        <ExplainCard
+          question={question}
+          onXp={(earned) => {
+            addXp(earned)
+            setGained((g) => g + earned)
+          }}
+          onDone={() => setQIdx((i) => i + 1)}
+        />
       </div>
     )
   }
@@ -107,7 +146,7 @@ export function Session() {
           <CardTitle>{question.title}</CardTitle>
           <Progress value={progressPct} className="h-2" />
           <p className="text-xs text-muted-foreground">
-            Soal {qIdx + 1}/{trace.length} · Step {stepIdx + 1}/{stepTotal}
+            Soal {qIdx + 1}/{session.length} · Step {stepIdx + 1}/{stepTotal}
           </p>
         </CardHeader>
         <CardContent className="flex flex-col gap-4">
