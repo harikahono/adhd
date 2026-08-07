@@ -4,7 +4,8 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
 import type { Question } from "@/content/types"
-import { useProgress } from "@/lib/useProgress"
+import { effectiveStreak, useProgress } from "@/lib/useProgress"
+import { useI18n } from "@/i18n"
 
 const categoryLabel: Record<Question["category"], string> = {
   js: "JavaScript",
@@ -12,8 +13,18 @@ const categoryLabel: Record<Question["category"], string> = {
   tailwind: "Tailwind",
 }
 
+function todayIso(): string {
+  return new Date().toISOString().slice(0, 10)
+}
+
 export function Dashboard() {
-  const { xp, streak, doneByCategory, manual, pasted } = useProgress()
+  const { t } = useI18n()
+  const { xp, streak, todaySession, doneByCategory, manual, pasted } =
+    useProgress()
+  const streakNow = effectiveStreak(
+    { xp, streak, todaySession, doneByCategory, manual, pasted },
+    todayIso()
+  )
   const totalDone = Object.values(doneByCategory).reduce((a, b) => a + b, 0)
   const totalExplain = manual + pasted
   const manualPct =
@@ -22,25 +33,30 @@ export function Dashboard() {
   return (
     <div className="mx-auto flex min-h-svh max-w-2xl flex-col gap-6 p-6">
       <header className="flex flex-col gap-2 pt-8">
-        <h1 className="text-2xl font-bold tracking-tight">Dashboard</h1>
-        <p className="text-muted-foreground">Konsistensi latihan harian lo.</p>
+        <h1 className="text-2xl font-bold tracking-tight">
+          {t("dashboardTitle")}
+        </h1>
+        <p className="text-muted-foreground">{t("dashboardSubtitle")}</p>
       </header>
 
       <div className="flex gap-3">
         <Badge variant="secondary" className="px-4 py-2 text-sm">
-          🔥 Streak: {streak} hari
+          🔥 Streak: {streakNow}{" "}
+          {streakNow === 0 && streak > 0
+            ? t("dashboardStreakBroken")
+            : t("dashboardStreakDays")}
         </Badge>
         <Badge variant="secondary" className="px-4 py-2 text-sm">
-          ⚡ XP total: {xp}
+          {t("dashboardXp", { xp })}
         </Badge>
         <Badge variant="outline" className="px-4 py-2 text-sm">
-          ✅ {totalDone} soal selesai
+          {t("dashboardDone", { n: totalDone })}
         </Badge>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>Soal selesai per kategori</CardTitle>
+          <CardTitle>{t("dashboardCatTitle")}</CardTitle>
         </CardHeader>
         <CardContent className="flex flex-col gap-4">
           {(Object.keys(doneByCategory) as Question["category"][]).map(
@@ -53,7 +69,7 @@ export function Dashboard() {
                   <div className="flex justify-between text-sm">
                     <span className="font-medium">{categoryLabel[cat]}</span>
                     <span className="text-muted-foreground">
-                      {count} soal ({pct}%)
+                      {t("dashboardCatCount", { n: count, p: pct })}
                     </span>
                   </div>
                   <Progress value={pct} className="h-2" />
@@ -66,19 +82,18 @@ export function Dashboard() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Jelasin pakai kata-kata</CardTitle>
+          <CardTitle>{t("dashboardExplainTitle")}</CardTitle>
         </CardHeader>
         <CardContent className="flex flex-col gap-4">
           {totalExplain === 0 ? (
             <p className="text-muted-foreground text-sm">
-              Belum ada soal explain yang dikerjain. Integritas lo: jujur itu
-              nilainya.
+              {t("dashboardEmptyExplain")}
             </p>
           ) : (
             <>
               <div className="flex flex-col gap-1.5">
                 <div className="flex justify-between text-sm">
-                  <span className="font-medium">Ditulis Manual</span>
+                  <span className="font-medium">{t("dashboardManual")}</span>
                   <span className="text-muted-foreground">
                     {manual} ({manualPct}%)
                   </span>
@@ -86,9 +101,7 @@ export function Dashboard() {
                 <Progress value={manualPct} className="h-2" />
               </div>
               <p className="text-muted-foreground text-xs">
-                Ditempel: {pasted}. Tag integritas otomatis dari tombol
-                &ldquo;Ditempel&rdquo; — rasio ini cuma buat lo sendiri, nggak
-                dihukum.
+                {t("dashboardPastedNote", { n: pasted })}
               </p>
             </>
           )}
@@ -100,7 +113,7 @@ export function Dashboard() {
         nativeButton={false}
         className="w-fit"
       >
-        Mulai sesi hari ini
+        {t("dashboardCta")}
       </Button>
     </div>
   )

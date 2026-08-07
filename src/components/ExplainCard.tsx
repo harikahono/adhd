@@ -1,9 +1,10 @@
-import { useRef, useState } from "react"
+import { useState } from "react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Textarea } from "@/components/ui/textarea"
 import type { ExplainQuestion } from "@/content/types"
+import { useI18n } from "@/i18n"
 
 type Phase = "writing" | "loading" | "done" | "error"
 
@@ -23,15 +24,15 @@ export function ExplainCard({
   onXp: (xp: number, mode: "manual" | "pasted") => void
   onDone: () => void
 }) {
+  const { lang, t } = useI18n()
   const [answer, setAnswer] = useState("")
   const [phase, setPhase] = useState<Phase>("writing")
   const [pasted, setPasted] = useState(false)
   const [result, setResult] = useState<Result | null>(null)
-  const pastedRef = useRef(false)
+  const [xpAwarded, setXpAwarded] = useState(false)
 
   async function submit() {
     setPhase("loading")
-    pastedRef.current = pasted
     try {
       const res = await fetch("/api/grade", {
         method: "POST",
@@ -40,13 +41,18 @@ export function ExplainCard({
           question,
           answer,
           mode: pasted ? "pasted" : "manual",
+          lang,
         }),
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error ?? res.statusText)
       setResult(data)
       setPhase("done")
-      onXp(question.xp, pasted ? "pasted" : "manual")
+      // XP cuma sekali per soal — ulang jawab nggak nambah XP (anti-grind)
+      if (!xpAwarded) {
+        setXpAwarded(true)
+        onXp(question.xp, pasted ? "pasted" : "manual")
+      }
     } catch {
       setPhase("error")
     }
@@ -57,15 +63,15 @@ export function ExplainCard({
       <CardContent className="flex flex-col gap-4 py-6">
         <div className="flex items-center gap-2">
           <Badge variant={pasted ? "secondary" : "outline"}>
-            {pasted ? "Ditempel" : "Ditulis Manual"}
+            {pasted ? t("explainPasted") : t("explainManual")}
           </Badge>
           {phase === "done" && result && (
             <Badge>
               {result.score >= 80
-                ? "Lumayan!"
+                ? t("explainGood")
                 : result.score >= 50
-                  ? "Bisa lebih"
-                  : "Perlu dibedah ulang"}
+                  ? t("explainOk")
+                  : t("explainLow")}
             </Badge>
           )}
         </div>
@@ -76,19 +82,18 @@ export function ExplainCard({
               value={answer}
               onChange={(e) => setAnswer(e.target.value)}
               onPaste={() => setPasted(true)}
-              placeholder="Jelasin pakai kata-kata lo sendiri. Nggak apa-apa nggak rapi — yang penting nalarnya keliatan."
+              placeholder={t("explainPlaceholder")}
               className="min-h-40"
             />
             <div className="flex items-center justify-between">
               <p className="text-muted-foreground text-xs">
-                Tag integritas otomatis: paste = &ldquo;Ditempel&rdquo;.
-                Kejujuran pilihan lo.
+                {t("explainIntegrity")}
               </p>
               <Button
                 onClick={submit}
                 disabled={phase === "loading" || answer.trim().length < 10}
               >
-                {phase === "loading" ? "Menilai..." : "Kirim jawaban"}
+                {phase === "loading" ? t("explainLoading") : t("explainSubmit")}
               </Button>
             </div>
           </>
@@ -96,17 +101,18 @@ export function ExplainCard({
 
         {phase === "error" && (
           <div className="border-destructive/40 bg-destructive/5 rounded-lg border p-4 text-sm">
-            <p className="text-destructive font-semibold">Gagal menilai.</p>
+            <p className="text-destructive font-semibold">
+              {t("explainErrorTitle")}
+            </p>
             <p className="text-muted-foreground mt-1">
-              Layanan AI grading lagi bermasalah. Coba lagi nanti — progress
-              trace lo aman.
+              {t("explainErrorBody")}
             </p>
             <Button
               variant="outline"
               className="mt-3"
               onClick={() => setPhase("writing")}
             >
-              Coba lagi
+              {t("explainRetry")}
             </Button>
           </div>
         )}
@@ -121,7 +127,7 @@ export function ExplainCard({
             </div>
             {result.corrections.length > 0 && (
               <div className="flex flex-col gap-1">
-                <p className="text-sm font-medium">Istilah yang meleset:</p>
+                <p className="text-sm font-medium">{t("explainCorrections")}</p>
                 {result.corrections.map((c, i) => (
                   <p key={i} className="text-muted-foreground text-sm">
                     • {c}
@@ -132,9 +138,12 @@ export function ExplainCard({
             <p className="text-muted-foreground text-xs">
               model: {result.model}
             </p>
-            <Button onClick={onDone} className="w-fit">
-              Soal berikutnya →
-            </Button>
+            <div className="flex gap-2">
+              <Button variant="outline" onClick={() => setPhase("writing")}>
+                {t("explainRewrite")}
+              </Button>
+              <Button onClick={onDone}>{t("explainNext")}</Button>
+            </div>
           </div>
         )}
       </CardContent>
