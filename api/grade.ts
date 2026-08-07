@@ -3,46 +3,86 @@
 // Pola: client → function → NVIDIA NIM. API key HANYA di env server.
 // Runtime: Vercel Node (Web API handler) / bisa di-test via tsx.
 // ============================================================
-import type { ExplainQuestion } from "../src/content/types"
+import type { ExplainQuestion } from "../src/content/types.ts"
 
 const NIM_URL = "https://integrate.api.nvidia.com/v1/chat/completions"
 
+export type Lang = "id" | "en"
+
 export interface GradeResult {
   score: number // 0-100
-  feedback: string // koreksi analogi (Indonesia)
+  feedback: string // koreksi analogi, bahasa sesuai lang
   corrections: string[] // istilah yang meleset
   model: string
 }
 
-function buildPrompt(q: ExplainQuestion, answer: string, mode: string): string {
-  return `Kamu mentor koding senior yang kritis tapi hangat, gaya koreksi Gemini: per-bagian, pakai analogi konkret sehari-hari, bahasa Indonesia lisan santai.
+const INSTRUCTIONS: Record<Lang, string> = {
+  id: `Kamu mentor koding senior yang kritis tapi hangat, gaya koreksi Gemini: per-bagian, pakai analogi konkret sehari-hari, bahasa Indonesia lisan santai.
 
 TUGAS: nilai jawaban user terhadap soal explain di bawah ini.
 
 === SOAL ===
-${q.title}
-Judul: ${q.title}
+{title}
 
 Kode yang dibedah:
-${q.snippet}
+{snippet}
 
 Instruksi ke user:
-${q.prompt}
+{prompt}
 
 === RUBRIC (istilah & konsep yang WAJIB muncul) ===
-${q.rubric}
+{rubric}
 
-=== JAWABAN USER (ditandai: ${mode}) ===
-${answer}
+=== JAWABAN USER (ditandai: {mode}) ===
+{answer}
 
 === PERINTAH OUTPUT ===
 Balas HANYA dengan JSON valid tanpa markdown, tanpa teks lain:
 {"score": <0-100>, "feedback": "<koreksi: sebut yang bener, analogi, bahasa Indonesia>", "corrections": ["<istilah yang meleset 1>", "<istilah yang meleset 2>"]}
-score 90+ kalau semua istilah wajib ada dan benar; kurangi tiap istilah wajib yang salah/kurang; 0-30 kalau nyasar total.`
+score 90+ kalau semua istilah wajib ada dan benar; kurangi tiap istilah wajib yang salah/kurang; 0-30 kalau nyasar total.`,
+  en: `You are a senior coding mentor, critical but warm, Gemini-style correction: point-by-point, concrete everyday analogies, casual spoken English.
+
+TASK: grade the user's answer to the explain question below.
+
+=== QUESTION ===
+{title}
+
+Code to dissect:
+{snippet}
+
+Instruction to the user:
+{prompt}
+
+=== RUBRIC (terms & concepts that MUST appear) ===
+{rubric}
+
+=== USER's ANSWER (flagged: {mode}) ===
+{answer}
+
+=== OUTPUT RULES ===
+Reply with ONLY valid JSON, no markdown, no extra text:
+{"score": <0-100>, "feedback": "<english correction: what's right, analogy, casual>", "corrections": ["<wrongly used term 1>", "<wrongly used term 2>"]}
+score 90+ when all required terms are present and correct; deduct per missing/wrong required term; 0-30 when completely off-track.`,
+}
+
+function buildPrompt(
+  q: ExplainQuestion,
+  answer: string,
+  mode: string,
+  lang: Lang
+): string {
+  const tpl = INSTRUCTIONS[lang]
+  return tpl
+    .replaceAll("{title}", q.title)
+    .replaceAll("{snippet}", q.snippet)
+    .replaceAll("{prompt}", q.prompt)
+    .replaceAll("{rubric}", q.rubric)
+    .replaceAll("{mode}", mode)
+    .replaceAll("{answer}", answer)
 }
 
 // model reasoning nulis banyak draft JSON di tengah teks — ambil JSON valid PALING BELAKANG
-function extractLastJson(text: string): unknown | null {
+function extractLastJson(text: string): Record<string, unknown> | null {
   let end = text.lastIndexOf("}")
   while (end !== -1) {
     let start = text.lastIndexOf("{", end)
@@ -74,11 +114,13 @@ function parseGrade(text: string, model: string): GradeResult {
     model,
   }
 }
+
 // pure, bisa di-test via tsx (scripts/verify-grade.ts)
 export async function gradeExplain(
   q: ExplainQuestion,
   answer: string,
-  mode: "manual" | "pasted"
+  mode: "manual" | "pasted",
+  lang: Lang = "id"
 ): Promise<GradeResult> {
   const key = process.env.NVIDIA_API_KEY
   if (!key) throw new Error("NVIDIA_API_KEY tidak ada di env")
@@ -92,7 +134,7 @@ export async function gradeExplain(
     },
     body: JSON.stringify({
       model,
-      messages: [{ role: "user", content: buildPrompt(q, answer, mode) }],
+      messages: [{ role: "user", content: buildPrompt(q, answer, mode, lang) }],
       temperature: 0.3,
       top_p: 0.95,
       max_tokens: 1024,
@@ -104,17 +146,22 @@ export async function gradeExplain(
     throw new Error(`NIM error ${res.status}: ${detail.slice(0, 200)}`)
   }
   const data = await res.json()
-  // ponytail: stepfun-ai/step-3.7-flash = reasoning model — output di message.reasoning, content null
+  // ponytail: model reasoning — output di message.reasoning, content null
   const msg = data?.choices?.[0]?.message
   const text: string = msg?.content ?? msg?.reasoning ?? ""
   return parseGrade(text, model)
 }
 
-// Vercel serverless handler (Web API)
+// Vercel serverless handler (Vær API)
 export default async function handler(req: Request): Promise<Response> {
   if (req.method !== "POST")
     return Response.json({ error: "Method not allowed" }, { status: 405 })
-  let body: { question?: ExplainQuestion; answer?: string; mode?: string }
+  let body: {
+    question?: ExplainQuestion
+    answer?: string
+    mode?: string
+    lang?: string
+  }
   try {
     body = await req.json()
   } catch {
@@ -138,7 +185,8 @@ export default async function handler(req: Request): Promise<Response> {
     const result = await gradeExplain(
       q,
       answer,
-      body.mode === "pasted" ? "pasted" : "manual"
+      body.mode === "pasted" ? "pasted" : "manual",
+      body.lang === "en" ? "en" : "id"
     )
     return Response.json(result)
   } catch (e) {
